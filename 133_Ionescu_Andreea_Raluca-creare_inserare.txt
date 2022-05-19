@@ -1,0 +1,746 @@
+
+----------------------------------ADDRESSES-----------------------------------
+
+CREATE TABLE ADDRESSES    
+(
+ address_id NUMBER(10) CONSTRAINT PKEY_ADDRESS PRIMARY KEY,
+ street_name VARCHAR(255) CONSTRAINT nume_strada NOT NULL,
+ number_ NUMBER(10) CONSTRAINT numar_adresa NOT NULL,
+ city VARCHAR(255) CONSTRAINT nume_oras NOT NULL,
+ other_details VARCHAR(255) CONSTRAINT detalii_adresa NOT NULL
+);
+SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME = "tabnam";
+select * from ADDRESSES;
+drop table ADDRESSES;
+
+
+  SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME = 'ADDRESSES';
+  
+--
+--ALTER TABLE PARENTS
+--DROP CONSTRAINT FK_ADDRESS_PARENT;
+
+
+INSERT INTO ADDRESSES
+VALUES(1,'Aleea Militari', 22,'Ploiesti','Bloc 12D');
+INSERT INTO ADDRESSES
+VALUES(2,'Piata Bobalna', 23,'Ploiesti','Nr. 2');
+INSERT INTO ADDRESSES
+VALUES(3,'Brestei', 18,'Ploiesti','Bloc 7B');
+INSERT INTO ADDRESSES
+VALUES(4,'Independentei', 22,'Campina','Nr. 123');
+INSERT INTO ADDRESSES
+VALUES(5,'Cuza Voda', 101,'Ploiesti','Nr. 21');
+INSERT INTO ADDRESSES
+VALUES(6,'Alexandru Ioan Cuza', 56,'Azuga','Bloc 17A');
+INSERT INTO ADDRESSES
+VALUES(7,'Mos Ion Roata', 32,'Azuga','Nr. 14');
+INSERT INTO ADDRESSES
+VALUES(8,'Alexandru Ioan Cuza', 56,'Azuga','Nr.17');
+INSERT INTO ADDRESSES
+VALUES(9,'Alexandru Odobescu', 99,'Azuga','Bloc 17A');
+
+------------------------------SCHOOL---------------------------------------
+
+CREATE TABLE SCHOOL    
+(
+     school_id NUMBER(10) CONSTRAINT PKEY_SCHOOL PRIMARY KEY,
+     school_name VARCHAR(255) CONSTRAINT nume_scoala NOT NULL,
+     principal_id NUMBER(11) CONSTRAINT id_director NOT NULL,
+     school_desc VARCHAR(255) CONSTRAINT descriere_scoala NOT NULL,
+     address_id NUMBER(10),
+     CONSTRAINT fk_address_school FOREIGN KEY (address_id) REFERENCES ADDRESSES(address_id) 
+);
+
+select * from SCHOOL;
+drop table SCHOOL;
+INSERT INTO SCHOOL
+VALUES(11,'Sfanta Vineri', 43,'Clase speciale de matematica si informatica',5);
+
+INSERT INTO SCHOOL
+VALUES(12,'Sfanta Maria', 42,'Clase speciale de matematica si informatica',7);
+
+INSERT INTO SCHOOL
+VALUES(13,'Sfanta Ana', 41,'Clase speciale de informatica si engleza',4);
+
+INSERT INTO SCHOOL
+VALUES(14,'Sfanta Vasile', 44,'Clase speciale de germana si engleza',2);
+INSERT INTO SCHOOL
+VALUES(15,'Sfantul Gheorghe', 45,'Clase speciale de informatica si engleza',8) ;
+
+select * from SCHOOL;
+
+update school
+set principal_id=33
+where school_name='Sfanta Vineri';
+
+update school
+set principal_id=34
+where school_name='Sfanta Maria';
+
+update school
+set principal_id=35
+where school_name='Sfanta Ana';
+
+update school
+set principal_id=37
+where school_name='Sfantu Gheorghe';
+
+update school
+set school_name='Sfantu Gheorghe'
+where school_id=15;
+
+update school
+set principal_id=36
+where school_name='Sfanta Vasile';
+---------------------------------STUDENT-------------------------------------
+CREATE TABLE STUDENT  
+(student_id  NUMBER(10) CONSTRAINT PKEY_STUDENT PRIMARY KEY,
+ address_id NUMBER(10),
+ school_id NUMBER(10),
+last_name VARCHAR(255) CONSTRAINT prenume_elev NOT NULL,
+first_name VARCHAR(255) CONSTRAINT nume_elev NOT NULL,
+ sex VARCHAR(255) CONSTRAINT sex_elev NOT NULL,
+ age NUMBER(2) CONSTRAINT varsta_elev NOT NULL,
+ email VARCHAR(255) UNIQUE,
+ student_email VARCHAR(255) UNIQUE,
+ student_pass VARCHAR(255) UNIQUE,
+ phone_number1 NUMBER(11) UNIQUE,
+ school_year NUMBER(2) CONSTRAINT an_scolar_elev NOT NULL,
+ CONSTRAINT fk_address_student FOREIGN KEY(address_id) references ADDRESSES(address_id),
+ CONSTRAINT fk_school_student FOREIGN KEY(school_id) references SCHOOL(school_id)
+);
+
+select * from STUDENT;
+drop table STUDENT;
+INSERT INTO STUDENT
+VALUES(21,1,11,'Ionescu','Raluca','feminin',13,'ionescu_raluca@yahoo.com','raluca-ionescu@sv.ro','9374891',0722222222,7);
+INSERT INTO STUDENT
+VALUES(22,1,11,'Ionescu','Matei','masculin',12,'ionescu_matei@yahoo.com','matei-ionescu@sv.ro','9325891',0733333333,6);
+INSERT INTO STUDENT
+VALUES(23,4,13,'Popescu','Alex','masculin',10,'alex_popescu@yahoo.com','alex-popescu@sa.ro','9374521511',0744444444,4);
+INSERT INTO STUDENT
+VALUES(24,6,15,'Iancu','Andreea','feminin',11,'iancu_andreea@yahoo.com','andreea-iancu@sv.ro','934713591',0755555555,5);
+INSERT INTO STUDENT
+VALUES(25,3,14,'Gaias','Delia','feminin',14,'gaias_delia@yahoo.com','delia-gaias@sv.ro','93747891',0766666666,8);
+
+INSERT INTO STUDENT
+VALUES(26,9,15,'Anghel','Andreea','feminin',11,'anghel_andreea@yahoo.com','andreea-anghel@sv.ro','9347130091',0755575555,5);
+
+
+----------------------------EMPLOYEE-----------------------------------------
+CREATE TABLE EMPLOYEE 
+(
+ employee_id NUMBER(11) CONSTRAINT PKEY_EMPLOYEE PRIMARY KEY,
+ school_id NUMBER(10),
+ CONSTRAINT fk_school_employee FOREIGN KEY(school_id) references SCHOOL(school_id),
+ first_name VARCHAR(40) CONSTRAINT prenume_angajat NOT NULL,
+ last_name VARCHAR(40) CONSTRAINT nume_angajat NOT NULL,
+ sex VARCHAR(10) CONSTRAINT sex_angajat NOT NULL
+ );
+ drop table EMPLOYEE;
+ select * from EMPLOYEE;
+ --profi
+
+update EMPLOYEE
+set salary=4600
+where employee_id=31;
+
+delete from EMPLOYEE;
+
+
+ALTER TABLE EMPLOYEE
+ADD (salary NUMBER(10) default 4600);
+ALTER TABLE EMPLOYEE
+ADD CONSTRAINT salariu_angajat NOT NULL(salary) ;
+
+update employee
+set salary=salary+20/100*salary
+where employee_id=34 or employee_id=38 or employee_id=42
+or employee_id=41 or employee_id=52 
+or employee_id=48 or employee_id=39 
+or employee_id=49 or employee_id=51;
+INSERT INTO EMPLOYEE
+VALUES(31,11,'Simache','Catalin','masculin');
+INSERT INTO EMPLOYEE
+VALUES(32,11,'Cristea','Daniel','masculin');
+INSERT INTO EMPLOYEE
+VALUES(33,11,'Mocanu','Alexandru','masculin');
+INSERT INTO EMPLOYEE
+VALUES(34,12,'Radu','Andrei','masculin'); 
+INSERT INTO EMPLOYEE
+VALUES(35,13,'Manole','Ioana','feminin');
+INSERT INTO EMPLOYEE
+VALUES(36,14,'Ciobanu','Diana','feminin');
+INSERT INTO EMPLOYEE
+VALUES(37,15,'Stanescu','Delia','feminin');
+INSERT INTO EMPLOYEE
+VALUES(38,11,'Radu','Bianca','feminin');
+INSERT INTO EMPLOYEE
+VALUES(39,12,'Borindel','Alina','feminin');
+INSERT INTO EMPLOYEE
+VALUES(40,13,'Gheorghe','Matei','feminin');
+--alti angajati----
+INSERT INTO EMPLOYEE
+VALUES(41,11,'Anghel','Ana','feminin');
+INSERT INTO EMPLOYEE
+VALUES(42,12,'Poposcu','Briana','feminin');
+INSERT INTO EMPLOYEE
+VALUES(43,13,'Iordache','Bogdan','masculin');
+INSERT INTO EMPLOYEE
+VALUES(44,14,'Manolache','George','masculin');
+INSERT INTO EMPLOYEE
+VALUES(45,12,'Ionescu','Maria','feminin');
+INSERT INTO EMPLOYEE
+VALUES(46,15,'Iordache','Mihaela','feminin');
+INSERT INTO EMPLOYEE
+VALUES(47,14,'Catargiu','Costel','masculin');
+INSERT INTO EMPLOYEE
+VALUES(48,13,'Suciu','Ana','feminin');
+INSERT INTO EMPLOYEE
+VALUES(49,12,'Ganea','Artur','masculin');
+INSERT INTO EMPLOYEE
+VALUES(50,11,'Mocanu','Sandu','masculin');
+INSERT INTO EMPLOYEE
+VALUES(51,14,'Barbu','Dimitrie','masculin');
+INSERT INTO EMPLOYEE
+VALUES(52,13,'Gheorghiu','Antonio','masculin');
+INSERT INTO EMPLOYEE
+VALUES(53,12,'Poenaru','Antonio','masculin');
+INSERT INTO EMPLOYEE
+VALUES(54,11,'Filotti','Flaviu','masculin');
+INSERT INTO EMPLOYEE
+VALUES(55,15,'Mitu','Ion','masculin');
+
+----------------------OTHEREMPLOYEES--------------------------------------------------
+
+CREATE TABLE OTHEREMPLOYEES 
+(
+ other_employee_id NUMBER(10) CONSTRAINT PKEY_OTHEREMPLOYEE PRIMARY KEY,
+ employee_id NUMBER(10),
+ CONSTRAINT fk_otheremployee_employee FOREIGN KEY(employee_id) references EMPLOYEE(employee_id),
+ job_name VARCHAR(40) CONSTRAINT nume_alt_angajat NOT NULL,
+ job_description VARCHAR(255) NOT NULL
+ );
+ drop table OTHEREMPLOYEES;
+ select * from OTHEREMPLOYEES;
+INSERT INTO OTHEREMPLOYEES
+VALUES(501,41,'Janitor','Responsabil pentru cladirea nordica');
+INSERT INTO OTHEREMPLOYEES
+VALUES(502,42,'Janitor','Responsabil pentru cladirea nordica');
+INSERT INTO OTHEREMPLOYEES
+VALUES(503,43,'Janitor','Responsabil pentru cladirea sudica');
+INSERT INTO OTHEREMPLOYEES
+VALUES(504,44,'Janitor','Responsabil pentru cladirea sudica');
+INSERT INTO OTHEREMPLOYEES
+VALUES(505,46,'Nurse','Asistenta medicala la cabinetul stomatologic.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(506,45,'Nurse','Asistenta medicala la cabinetul medical.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(507,47,'Nurse','Asistenta medicala la cabinetul medical.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(508,48,'Nurse','Asistenta medicala la cabinetul stomatologic.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(509,49,'Guardian','Gardian la poarta de la aripa sudica.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(510,50,'Guardian','Gardian la poarta de la aripa nordica.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(511,51,'Secretary','Angajat part-time.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(512,52,'Mechanic','Angajat part-time.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(513,53,'Mechanic','Responsabil cladirea sudica.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(514,54,'Mechanic','Angajata part-time.');
+INSERT INTO OTHEREMPLOYEES
+VALUES(515,55,'Secretary','Responsabil cladirea sudica.');
+
+----------------------JANITOR--------------------------------------------------
+create table JANITOR
+(
+janitor_id NUMBER(10) constraint PKEY_JANTOR PRIMARY KEY,
+other_employee_id NUMBER(10),
+CONSTRAINT fk_janitor_employee FOREIGN KEY(other_employee_id) references OTHEREMPLOYEES(other_employee_id)
+);
+drop table JANITOR;
+select * from JANITOR;
+INSERT INTO JANITOR
+VALUES(601,501);
+INSERT INTO JANITOR
+VALUES(602,502);
+INSERT INTO JANITOR
+VALUES(603,503);
+INSERT INTO JANITOR
+VALUES(604,504);
+
+----------------------SECRETARY--------------------------------------------------
+create table SECRETARY
+(
+secretary_id NUMBER(10) constraint PKEY_SECRETARY PRIMARY KEY,
+other_employee_id NUMBER(10),
+CONSTRAINT fk_secretary_employee FOREIGN KEY(other_employee_id) references OTHEREMPLOYEES(other_employee_id)
+);
+drop table SECRETARY;
+select * from SECRETARY;
+INSERT INTO SECRETARY
+VALUES(605,511);
+
+INSERT INTO SECRETARY
+VALUES(604,515);
+
+
+-------------------------NURSE--------------------------------------------------
+
+create table NURSE
+(
+nurse_id NUMBER(10) constraint PKEY_NURSE PRIMARY KEY,
+other_employee_id NUMBER(10),
+CONSTRAINT fk_nurse_employee FOREIGN KEY(other_employee_id) references OTHEREMPLOYEES(other_employee_id)
+);
+drop table NURSE;
+select * from NURSE;
+INSERT INTO NURSE
+VALUES(604,505);
+
+INSERT INTO NURSE
+VALUES(605,506);
+
+INSERT INTO NURSE
+VALUES(606,507);
+
+INSERT INTO NURSE
+VALUES(609,508);
+
+
+----------------------MECHANIC--------------------------------------------------
+
+create table MECHANIC
+(
+mechanic_id NUMBER(10) constraint PKEY_MECHANIC PRIMARY KEY,
+other_employee_id NUMBER(10),
+CONSTRAINT fk_mechanic_employee FOREIGN KEY(other_employee_id) 
+references OTHEREMPLOYEES(other_employee_id)
+);
+drop table MECHANIC;
+select * from MECHANIC;
+INSERT INTO MECHANIC
+VALUES(610,512);
+
+INSERT INTO MECHANIC
+VALUES(611,513);
+
+INSERT INTO MECHANIC
+VALUES(612,514);
+
+
+----------------------GUARDIAN----------------------------------------------
+create table GUARDIAN
+(
+guardian_id NUMBER(10) constraint PKEY_GUARDIAN PRIMARY KEY,
+other_employee_id NUMBER(10),
+CONSTRAINT fk_guardian_employee FOREIGN KEY(other_employee_id)
+references OTHEREMPLOYEES(other_employee_id)
+);
+drop table GUARDIAN;]
+select * from GUARDIAN;
+INSERT INTO GUARDIAN
+VALUES(613,509);
+
+INSERT INTO GUARDIAN
+VALUES(610,510);
+
+
+----------------------TEACHERS--------------------------------------------------
+CREATE TABLE TEACHERS
+(
+teacher_id NUMBER(11) CONSTRAINT PKEY_TEACHER PRIMARY KEY,
+employee_id NUMBER(10),
+CONSTRAINT fk_teacher_employee FOREIGN KEY(employee_id)
+references EMPLOYEE(employee_id)
+);
+drop table TEACHERS;
+select * from TEACHERS;
+INSERT INTO TEACHERS
+VALUES(61,31);
+INSERT INTO TEACHERS
+VALUES(62,32);
+INSERT INTO TEACHERS
+VALUES(63,33);
+INSERT INTO TEACHERS
+VALUES(64,34);
+INSERT INTO TEACHERS
+VALUES(65,35);
+INSERT INTO TEACHERS
+VALUES(66,36);
+INSERT INTO TEACHERS
+VALUES(67,37);
+INSERT INTO TEACHERS
+VALUES(68,38);
+INSERT INTO TEACHERS
+VALUES(69,39);
+INSERT INTO TEACHERS
+VALUES(70,40);
+
+
+----------------------CLASSROOM--------------------------------------------------
+
+CREATE TABLE CLASSROOM
+(
+ classroom_id NUMBER(10) CONSTRAINT PKEY_CLASSROOM PRIMARY KEY,
+ capacityy NUMBER(3) CONSTRAINT capacitate_sala NOT NULL,
+ classroom_type VARCHAR(25) CONSTRAINT tip_sala NOT NULL,
+ facilitati VARCHAR(255) CONSTRAINT facilitati_sala NOT NULL
+ );
+drop table CLASSROOM;
+select * from CLASSROOM;
+INSERT INTO CLASSROOM
+VALUES(80,30,'laborator','ustensile, videoproiector, whiteboard');
+
+INSERT INTO CLASSROOM
+VALUES(81,25,'laborator','videoproiector');
+
+INSERT INTO CLASSROOM
+VALUES(82,60,'amfiteatru','videoproiector, whiteboard');
+
+INSERT INTO CLASSROOM
+VALUES(83,30,'sala de clasa','whiteboard');
+
+INSERT INTO CLASSROOM
+VALUES(84,90,'sala de festivitati','videoproiector, whiteboard');
+
+INSERT INTO CLASSROOM
+VALUES(85,30,'Laborator de chimie','ustensile, whiteboard');
+
+
+----------------------COURSE--------------------------------------------------
+
+
+CREATE SEQUENCE SEQ_COURSE
+INCREMENT by 1
+START WITH 101
+MAXVALUE 10000
+NOCYCLE;
+
+CREATE TABLE COURSE
+(
+ course_id NUMBER(11) CONSTRAINT PKEY_COURSE PRIMARY KEY,
+ classroom_id NUMBER(10),
+ CONSTRAINT fk_course_classrooms FOREIGN KEY(classroom_id) 
+ references CLASSROOM(classroom_id),
+ course_name VARCHAR(30) CONSTRAINT nume_materie NOT NULL,
+ 
+ course_desc VARCHAR(255) CONSTRAINT descriere_curs NOT NULL
+ );
+drop table COURSE;
+select * from COURSE;
+INSERT INTO COURSE
+VALUES(SEQ_COURSE.NEXTVAL,83,'Matematica','Algebra');
+
+INSERT INTO COURSE
+VALUES(SEQ_COURSE.NEXTVAL,83,'Limba si literatura romana','Gramatica');
+
+INSERT INTO COURSE
+VALUES(SEQ_COURSE.NEXTVAL,82,'Engleza','Gramatica si Informal/Formal Letters');
+
+INSERT INTO COURSE
+VALUES(SEQ_COURSE.NEXTVAL,85,'Chimie','Chimie organica si anorganica');
+
+INSERT INTO COURSE
+VALUES(SEQ_COURSE.NEXTVAL,84,'Biologie','Chimie organica si anorganica');
+
+INSERT INTO COURSE
+VALUES(SEQ_COURSE.NEXTVAL,80,'Istorie','Istoria Romaniei');
+
+select * from course;
+
+----------------------MARKS--------------------------------------------------
+CREATE TABLE MARKS
+(
+ mark_id NUMBER(10) CONSTRAINT PKEY_MARK PRIMARY KEY,
+ date_ DATE CONSTRAINT data_obtinere_nota NOT NULL,
+ mark_ NUMBER(2) CONSTRAINT nota_materie NOT NULL
+ );
+ drop table MARKS;
+ select * from MARKS;
+INSERT INTO MARKS
+VALUES (111,TO_DATE('02-08-2021','DD-MM-YYYY'), 10);
+
+INSERT INTO MARKS
+VALUES (112,TO_DATE('02-09-2021','DD-MM-YYYY'), 9);
+ 
+INSERT INTO MARKS
+VALUES (113,TO_DATE('12-11-2021','DD-MM-YYYY'), 7);
+
+INSERT INTO MARKS
+VALUES (114,TO_DATE('02-07-2021','DD-MM-YYYY'), 9);
+
+INSERT INTO MARKS
+VALUES (115,TO_DATE('23-09-2021','DD-MM-YYYY'), 10);
+
+INSERT INTO MARKS
+VALUES (116,TO_DATE('12-06-2021','DD-MM-YYYY'), 8);
+
+INSERT INTO MARKS
+VALUES (117,TO_DATE('14-11-2021','DD-MM-YYYY'), 5);
+
+INSERT INTO MARKS
+VALUES (118,TO_DATE('17-06-2021','DD-MM-YYYY'), 10);
+
+INSERT INTO MARKS
+VALUES (119,TO_DATE('18-01-2021','DD-MM-YYYY'), 5);
+
+INSERT INTO MARKS
+VALUES (120,TO_DATE('19-02-2021','DD-MM-YYYY'), 4);
+
+INSERT INTO MARKS
+VALUES (120,TO_DATE('19-02-2021','DD-MM-YYYY'), 4);
+
+INSERT INTO MARKS
+VALUES (121,TO_DATE('19-02-2021','DD-MM-YYYY'), 8);
+
+----------------------PARENTS-------------------------------------------------
+CREATE TABLE PARENTS_
+(
+ parent_id NUMBER(10) CONSTRAINT PKEY_PARENT_ PRIMARY KEY,
+ address_id NUMBER(10),
+ first_name VARCHAR(40) CONSTRAINT prenume_parinte_ NOT NULL,
+ last_name VARCHAR(40) CONSTRAINT nume_parinte_ NOT NULL,
+ sex VARCHAR(10) CONSTRAINT sex_parinte_ NOT NULL,
+ email_ VARCHAR(40) UNIQUE,
+ phone_number NUMBER(10) UNIQUE,
+CONSTRAINT fk_address_parent_ FOREIGN KEY(address_id)
+references ADDRESSES(address_id)
+ );
+  SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME = 'PARENTS';
+  select * from PARENTS_;
+  alter table ADDRESSES
+  drop constraint fk_address_parent;
+drop table PARENTS_;
+ INSERT INTO PARENTS_
+VALUES(131,3,'Gaias','Natalia','feminin','gaias_natalia@yahoo.com',0777777777);
+ 
+ INSERT INTO PARENTS_
+VALUES(132,3,'Gaias','Marian','masculin','gaias_marian@yahoo.com',0788888888);
+
+INSERT INTO PARENTS_
+VALUES(133,1,'Ionescu','Georgiana','feminin','ionescu_georgiana@yahoo.com',0799999999);
+
+INSERT INTO PARENTS_
+VALUES(137,1,'Ionescu','Alex','masculin','ionescu_alex@yahoo.com',0799922999);
+
+INSERT INTO PARENTS_
+VALUES(134,6,'Iancu','Diana','feminin','iancu_diana@yahoo.com',0777774444);
+
+ INSERT INTO PARENTS_
+VALUES(138,6,'Iancu','Serban','masculin','iancu_serbanyahoo.com',0771177777);
+ INSERT INTO PARENTS_
+VALUES(135,4,'Popescu','Elena','feminin','popescu_elena@yahoo.com',0709997777); 
+ INSERT INTO PARENTS_
+VALUES(136,4,'Popescu','Andrei','masculin','popescu_andrei@yahoo.com',0711117777);
+ 
+  INSERT INTO PARENTS_
+VALUES(140,4,'Anghel','Sorina','feminin','anghel_sorina@yahoo.com',0709948777); 
+ INSERT INTO PARENTS_
+VALUES(139,9,'Anghel','Andrei','masculin','anghel_andrei@yahoo.com',07432117777);
+ 
+----------------------MAMA-------------------------------------------------- 
+create table MAMA
+(
+mama_id NUMBER(10) constraint PKEY_MAMA PRIMARY KEY,
+parent_id NUMBER(10),
+CONSTRAINT fk_mama_parent FOREIGN KEY(parent_id
+references PARENTS_(parent_id)
+);
+drop table MAMA;
+select * from PARENTS;
+select * from MAMA;
+
+insert into MAMA
+values(141,131);
+
+insert into MAMA
+values(142,133);
+
+insert into MAMA
+values(143,134);
+
+insert into MAMA
+values(144,135);
+insert into MAMA
+values(145,137);
+
+
+create table TATA
+(
+tata_id NUMBER(10) constraint PKEY_TATA PRIMARY KEY,
+parent_id NUMBER(10),
+CONSTRAINT fk_tata_parent FOREIGN KEY(parent_id) 
+references PARENTS_(parent_id)
+);
+drop table TATA;
+select * from TATA;
+insert into TATA
+values(151,132);
+
+insert into TATA
+values(152,137);
+
+insert into TATA
+values(153,138);
+
+insert into TATA
+values(154,136);
+insert into TATA
+values(155,139);
+
+----------------------CATALOG--------------------------------------------------
+CREATE TABLE CATALOG
+(student_id NUMBER(10) CONSTRAINT pk_st_catalog REFERENCES STUDENT(student_id),
+mark_id  NUMBER(10) CONSTRAINT pk_ma_catalog REFERENCES MARKS(mark_id),
+course_id NUMBER(11) CONSTRAINT pk_co_catalog REFERENCES COURSE(course_id),
+CONSTRAINT pk_catalog primary key(student_id,mark_id,course_id)
+);
+drop table CATALOG;
+select * from CATALOG;
+insert into CATALOG
+values(21,111,101);
+
+insert into CATALOG
+values(22,112,102);
+
+insert into CATALOG
+values(23,113,103);
+
+insert into CATALOG
+values(24,114,104);
+insert into CATALOG
+values(24,115,10);
+
+insert into CATALOG
+values(25,115,105);
+
+
+insert into CATALOG
+values(25,116,106);
+
+insert into CATALOG
+values(24,121,106);
+
+insert into CATALOG
+values(23,118,102);
+
+insert into CATALOG
+values(22,119,103);
+
+insert into CATALOG
+values(21,120,101);
+select * from catalog;
+------------------ELEVI_PARINTI-----------------------------------
+CREATE TABLE ELEVI_PARINTI
+(student_id NUMBER(10) CONSTRAINT pk_st_e_p REFERENCES STUDENT(student_id),
+parent_id  NUMBER(10) CONSTRAINT pk_pa_e_p REFERENCES PARENTS_(parent_id),
+number_of_family_members NUMBER(10) CONSTRAINT nb_of_members NOT NULL,
+CONSTRAINT pk_elevi_parinti primary key(student_id,parent_id)
+);
+drop table ELEVI_PARINTI;
+select * from ELEVI_PARINTI;
+select * from PARENTS_;
+select * from STUDENT;
+insert into ELEVI_PARINTI
+values(25,131,3);
+
+insert into ELEVI_PARINTI
+values(25,132,3);
+
+insert into ELEVI_PARINTI
+values(21,137,4);
+
+insert into ELEVI_PARINTI
+values(21,133,4);
+
+insert into ELEVI_PARINTI
+values(22,137,4);
+
+insert into ELEVI_PARINTI
+values(22,133,4);
+
+insert into ELEVI_PARINTI
+values(23,135,3);
+
+insert into ELEVI_PARINTI
+values(23,136,3);
+
+insert into ELEVI_PARINTI
+values(24,138,3);
+
+insert into ELEVI_PARINTI
+values(24,134,3);
+
+
+
+------------------PREDA-----------------------------------
+CREATE TABLE PREDA
+(teacher_id NUMBER(10) CONSTRAINT pk_p_t REFERENCES TEACHERS(teacher_id),
+course_id  NUMBER(10) CONSTRAINT pk_p_c REFERENCES COURSE(course_id),
+CONSTRAINT pk_preda primary key(teacher_id,course_id)
+);
+
+drop table PREDA;
+select * from PREDA;
+
+insert into PREDA
+values(61,101);
+
+insert into PREDA
+values(62,102);
+
+insert into PREDA
+values(63,103);
+
+insert into PREDA
+values(64,104);
+
+insert into PREDA
+values(65,105);
+
+insert into PREDA
+values(66,106);
+
+insert into PREDA
+values(67,101);
+
+insert into PREDA
+values(68,102);
+
+insert into PREDA
+values(69,103);
+
+insert into PREDA
+values(70,101);
+
+insert into PREDA
+values(70,102);
+
+insert into PREDA
+values(70,103);
+
+insert into PREDA
+values(70,104);
+
+insert into PREDA
+values(70,105);
+
+insert into PREDA
+values(70,106);
+
+insert into PREDA
+values(68,101);
+insert into PREDA
+values(68,103);
+insert into PREDA
+values(68,104);
+insert into PREDA
+values(68,105);
+insert into PREDA
+values(68,106);
+

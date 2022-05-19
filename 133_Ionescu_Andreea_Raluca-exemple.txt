@@ -1,0 +1,179 @@
+--1 afisati  numele scolii,salariul si  numele si prenumele angajatilor care au salariu mai mare decat
+--valoarea medie a salariilor colegilor sai de la aceeasi scoala si
+-- care lucreaza la scoala care se afla pe strada care incepe cu 'Inde'
+select * from addresses;
+SELECT CONCAT(CONCAT(em.first_name,' '),em.last_name) as "ANGAJAT",em.salary,
+                        (select school_name 
+                        from school
+                        where em.school_id=school_id) as "Nume_scoala"
+from EMPLOYEE em
+where em.salary > (select avg(salary)
+                        from  employee
+                        where school_id=em.school_id
+                        )
+        and em.employee_id in (select e.employee_id
+                                from employee e,school s,addresses a
+                                where e.school_id=s.school_id and a.address_id=s.address_id and
+                                s.address_id =(select address_id
+                                                from addresses
+                                                where lower(street_name) like 'inde%')); 
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+--2.sa se afiseze pentru toate scolile care incep cu 'Sf': numele scolii, 
+--numele,prenumele elevilor , numele cursurilor si toate notele la acele cursuri
+--ale elevilor(join pe minim 4 tabele) si notele sa fi fost luate in ultimele 10 luni
+select sc.school_name,s.last_name,s.first_name, c.course_name,m.mark_,
+round(months_between(to_date(sysdate,'dd-mm-yyyy'),m.date_)) as Nr_Luni
+from marks m, student s, course c,catalog ct,school sc
+where s.student_id=ct.student_id and m.mark_id=ct.mark_id and c.course_id=ct.course_id
+and sc.school_name like 'Sf%' and sc.school_id=s.school_id 
+and months_between(to_date(sysdate,'dd-mm-yyyy'),m.date_)<=10
+order by 1;
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+-- 3.Sa se creeze o cerere prin care sa se afiseze numarul total de studenti si,
+--din acest total, numarul celor care au varsta s-au nascut in anii 2009,2010,2011,2012,2013.
+--Denumiti capetele de tabel in mod corespunzator.
+SELECT COUNT(*) TOTAL_STUDENTI,           ---functie grup
+SUM(DECODE(TO_CHAR(sysdate,'yyyy')-age,2009,1,0)) "Nascut in 2009",
+SUM(DECODE(TO_CHAR(sysdate,'yyyy')-age,2010,1,0)) "Nascut in 2010",
+SUM(DECODE(TO_CHAR(sysdate,'yyyy')-age,2011,1,0)) "Nascut in 2011",
+SUM(DECODE(TO_CHAR(sysdate,'yyyy')-age,2012,1,0)) "Nascut in 2012",
+SUM(DECODE(TO_CHAR(sysdate,'yyyy')-age,2013,1,0)) "Nascut in 2013"
+FROM student;
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+--4 angajatii care lucreaza in scoala cu are numarul minim de angajati.
+SELECT e.*
+FROM employee e
+WHERE e.school_id in (SELECT  s.school_id 
+                      FROM employee e,school s
+                      WHERE s.school_id=e.school_id
+                      GROUP BY s.school_name, s.school_id
+                      HAVING COUNT(*) = (SELECT MIN(count(*))   --filtrare la nivel de gr
+                                          FROM employee e,school  s
+                                          WHERE e.school_id=s.school_id
+                                          GROUP BY s.school_name, s.school_id));
+
+
+select * from student;
+-----------------------------------------------------------------------------------------------------------------------------------
+-- 5.afisati pentru fiecare student care are varsta mai mare decat a lui Popescu Alex
+--numele,nota,numele materiei si un mesaj de forma 'Nota 10'
+--si pentru notele sub 5 sa se afiseze "Test nepromovat", utilizand case
+with elev as (select student_id,last_name,first_name
+                from student
+                where age>(select age
+                            from student
+                            where last_name='Popescu' and first_name='Alex'))
+SELECT e.last_name, e.first_name, m.mark_, c.course_name,
+CASE
+    WHEN m.mark_ >= 10 THEN 'Nota 10'
+    WHEN m.mark_ >= 9 THEN 'Nota 9'
+    WHEN m.mark_ >= 8 THEN 'Nota 8'
+    WHEN m.mark_ >= 7 THEN 'Nota 7'
+    WHEN m.mark_>= 6 THEN 'Nota 6'
+    WHEN m.mark_ >= 5 THEN 'Nota 5'
+    ELSE 'Test nepromovat'
+END AS Nota
+FROM elev e,course c,catalog ct, marks m
+WHERE e.student_id=ct.student_id and m.mark_id=ct.mark_id and c.course_id=ct.course_id
+ORDER By e.last_name, e.first_name, c.course_name;
+
+
+-- sa se mareasca notele care sunt mai mici de nota maxima cu un punct
+UPDATE marks
+SET mark_ = mark_ + 1
+WHERE mark_ <(select max(mark_)
+            from marks);
+
+--sa se mareasca cu 10% salariul profesorilor
+UPDATE employee
+SET salary = salary+ 10/100*salary
+WHERE employee_id in(select e.employee_id
+                    from employee e,teachers t
+                    where e.employee_id=t.employee_id);
+
+--sa se adauge la facilitatile claselor care nu sunt sali de festivitati 
+--cate un laptop 
+select * from classroom;
+UPDATE classroom
+SET facilitati =CONCAT (facilitati,',laptop')
+WHERE classroom_id not in(select classroom_id
+                    from classroom
+                    where classroom_type like '%festivitati');
+            
+                
+--outer join , sa se afiseze id-ul parintelui,numele complet al studentului,numele scolii
+--pentru toate scolile.
+select p.parent_id,s.student_id,s.first_name||' '||s.last_name, sc.school_name
+from parents_  p right outer join elevi_parinti ep on (ep.parent_id=p.parent_id)
+left outer join student s on(s.student_id=ep.student_id)
+full outer join school sc on(sc.school_id=s.school_id);                    
+--outer join: sa se afiseze numele si id ul angajatilor,id-ul si numele scolii
+--la care sunt angajati, luandu-se in considerare si angajatii care nu sunt profesori
+select e.employee_id,e.last_name,t.teacher_id,e.school_id, s.school_name
+from employee e,teachers t,preda p,school s
+where e.employee_id=t.employee_id(+) and p.teacher_id(+)=t.teacher_id  
+and s.school_id=e.school_id and s.school_name like '%i%'
+order by t.teacher_id;                   
+                    
+
+
+--sa se afiseze profesorii care predau materia 'engleza'
+SELECT DISTINCT teacher_id
+FROM preda a 
+WHERE NOT EXISTS 
+    (SELECT 1 
+    FROM course c
+    WHERE course_name='Engleza' 
+    AND NOT EXISTS 
+        (SELECT 'x'
+        FROM preda p
+        WHERE c.course_id=p.course_id AND p.teacher_id=a.teacher_id))
+
+--sa se obtina codurile studentilor care participa la materiile Biologie si istorie
+SELECT  student_id 
+FROM catalog
+MINUS 
+SELECT student_id 
+from (SELECT student_id, course_id 
+      FROM (SELECT DISTINCT student_id FROM catalog) t1,
+           (SELECT course_id FROM course WHERE course_name ='Biologie' or course_name='Istorie') t2 
+            MINUS 
+            SELECT student_id, course_id
+            FROM catalog ) t3;
+
+--OPTIMIZARE
+
+--neoptimizat
+with r3 as (select salary,sex,school_id
+            from    (select salary,school_id,sex
+                    from (select salary,sex,school_id from employee)
+                    where salary>2000)
+            where salary<5000
+            ),
+    r6 as (select school_id,school_name
+            from    (select school_desc,school_id,school_name
+                    from(select school_id,school_desc,school_name from school)
+            where school_desc='Clase speciale de matematica si informatica')
+            )
+select r6.school_id,r6.school_name,r3.salary,r3.sex
+from r6,r3
+where r6.school_id=r3.school_id
+order by 1;
+
+--optimizat
+with r2 as   (select salary,sex,last_name,school_id
+            from employee
+            where salary<5000 and salary>2000),
+        r4 as   (select school_id,school_desc,school_name
+                from school
+                where school_desc='Clase speciale de matematica si informatica')
+                
+
+            
